@@ -9,7 +9,7 @@ router.post('/', async function(req, res, next) {
   let mensagem = {};
   try {
     connection = await oracledb.getConnection(dbConfig);
-    let result = await connection.execute(
+    await connection.execute(
       `CALL PKG_FICHA.INSERE('${req.body.nome}','${req.body.cpf}','${req.body.email}','${req.body.telefone}','${req.body.cidade}','${req.body.uf}')`,
       [],
       { autoCommit: true } 
@@ -18,10 +18,11 @@ router.post('/', async function(req, res, next) {
       mensagem:"Inserido com sucesso"
     }
   } catch (error) {
-    console.error(error);
-    res.json({
-      mensagem:error
-    });
+    console.log(error);
+    mensagem = {
+      mensagem:error.message,
+      error
+    };
   } finally {
     if (connection) {
       try {
@@ -29,7 +30,8 @@ router.post('/', async function(req, res, next) {
       } catch (error) {
         console.error(error);
         res.json({
-          mensagem:error
+          mensagem:error.message,
+          error
         });
       }
     }
