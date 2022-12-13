@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const oracledb = require('oracledb');
-const dbConfig = require('./../../dbconfig.js');
+const dbConfig = require('../../../dbconfig.js');
 
 /* POST ficha listing. */
 router.post('/', async function(req, res, next) {  
