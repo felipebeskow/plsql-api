@@ -131,7 +131,7 @@ create or replace package ppl.pkg_ficha as
   );
 end;
 
-create or replace package body ppl.pkg_ficha as
+create or replace package body  ppl.pkg_ficha as
   procedure insere(
     p_nome ficha.nome%type,
     p_cpf ficha.cpf%type,
@@ -149,6 +149,29 @@ create or replace package body ppl.pkg_ficha as
     p_codigo_ficha ficha.codigo%type
   ) as
   begin
+    for filiado in (
+      select 1 
+      from filiado
+      where cod_ficha = p_codigo_ficha
+    )loop
+      raise_application_error(-20002,'Ficha já homologada');
+    end loop;
+    
+    for filiado in (
+      select 1 
+      from ficha
+      where cpf in (
+        select cpf 
+        from filiado
+        where codigo = p_codigo_ficha
+          and cpf in (
+            select cpf from filiado
+          )
+      )
+    )loop
+      raise_application_error(-20002,'Ficha já homologada');
+    end loop;
+    
     for ficha in (
       select codigo,nome,cpf,telefone,cidade,uf
       from ficha where codigo = p_codigo_ficha
