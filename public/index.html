@@ -5,11 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ficha de inscrição</title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="./stylesheets/style.css">
 </head>
 <body>
     <h1>Ficha</h1>
-    <form>
+    <form id="form-ficha">
         <label for="nome">Nome: </label>
         <input id="nome" type="text" name="nome"><br>
         
@@ -28,7 +28,32 @@
         <label for="uf">UF: </label>
         <input id="uf" type="text" name="uf"><br>
         
-        <button type="submit" value="Enviar">Enviar</button>
+        <button id="btn-ficha" type="submit" value="Enviar">Enviar</button>
     </form>
 </body>
+<script>
+    document.querySelector("#btn-ficha").addEventListener('click', e=>{
+        e.preventDefault();
+        let dados = {
+            nome:document.querySelector("#nome"),
+            cpf:document.querySelector("#cpf"),
+            telefone:document.querySelector("#telefone"),
+            email:document.querySelector("#email"),
+            cidade:document.querySelector("#cidade"),
+            uf:document.querySelector("#uf"),
+        };
+        try{
+            let ajax = new XMLHttpRequest();
+
+            ajax.open('POST','/api/ficha');
+
+            ajax.onload = window.location.reload();
+
+            ajax.send(dados);
+
+        }catch(e){
+            console.error(e);
+        }
+    });
+</script>
 </html>
