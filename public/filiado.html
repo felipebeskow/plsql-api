@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de inscrição</title>
+    <link rel="stylesheet" href="./stylesheets/style.css">
+</head>
+<body>
+    
+    <h1>Terapia</h1>
+    <div class="app">
+        <button id="aba-ficha">Fichas</button>
+        <button id="aba-filiado">Filiados</button>
+        <button id="aba-contribuicao">Contribuição</button>
+    </div>
+
+
+    <h2>Fiiliado</h2>
+    <form id="form" class="app">
+        <label for="nome">Nome: </label>
+        <input id="nome" type="text" name="nome"><br>
+        
+        <label for="cpf">CPF: </label>
+        <input id="cpf" type="text" name="cpf"><br>
+        
+        <label for="telefone">Telefone: </label>
+        <input id="telefone" type="tel" name="telefone"><br>
+        
+        <label for="email">Email: </label>
+        <input id="email" type="email" name="email"><br>
+        
+        <label for="cidade">Cidade: </label>
+        <input id="cidade" type="text" name="cidade"><br>
+        
+        <label for="uf">UF: </label>
+        <input id="uf" type="text" name="uf"><br>
+        
+        <button id="btn-ficha" type="submit" value="Salvar">Enviar</button>
+    </form>
+
+    <table id="fichas"></table>
+</body>
+<script src="./cabecalho.js"></script>
+<script>
+    cabecalho();
+
+    function homologar(codigo){
+        console.log(codigo);
+        try{
+            let ajax = new XMLHttpRequest();
+
+            ajax.open('POST','/api/ficha/homologar');
+
+            ajax.onload = e => {
+                try{
+                    let retorno = JSON.parse(ajax.responseText);    
+                    
+                    alert(retorno.mensagem);
+
+                    if (retorno.error)
+                      console.error(retorno.error);
+                    else 
+                        window.location.reload();
+
+
+                }catch(e){
+                    console.error(e);
+                }
+            };
+            ajax.setRequestHeader('Content-Type','application/json');
+            ajax.send(JSON.stringify({
+                ficha: codigo
+            }));
+
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+    document.querySelector("#btn-ficha").addEventListener('click', e=>{
+        e.preventDefault();
+        let dados = {
+            nome:document.querySelector("#nome").value,
+            cpf:document.querySelector("#cpf").value,
+            telefone:document.querySelector("#telefone").value,
+            email:document.querySelector("#email").value,
+            cidade:document.querySelector("#cidade").value,
+            uf:document.querySelector("#uf").value.substring(0,2),
+        };
+        try{
+            let ajax = new XMLHttpRequest();
+
+            ajax.open('POST','/api/ficha');
+
+            ajax.onload = e => {
+                try{
+                    let retorno = JSON.parse(ajax.responseText);    
+                    
+                    alert(retorno.mensagem);
+
+                    if (retorno.error)
+                      console.error(retorno.error);
+                    else 
+                        window.location.reload();
+
+
+                }catch(e){
+                    console.error(e);
+                }
+            };
+            ajax.setRequestHeader('Content-Type','application/json');
+            ajax.send(JSON.stringify(dados));
+
+        }catch(e){
+            console.log(e);
+        }
+    });
+
+    let tableFicha = document.querySelector('#fichas');
+    
+    let ajax = new XMLHttpRequest();
+    ajax.open('GET','/api/ficha');
+    
+    ajax.onload = e => {
+    try{
+        let retorno = JSON.parse(ajax.responseText);    
+
+        if (retorno.error) {
+            alert(retorno.mensagem);
+            console.error(retorno.error);
+        } else {
+            
+            let tr = document.createElement('tr');
+            retorno.metaData.forEach( e => {
+                let th = document.createElement('th');
+                th.innerText = e.name;
+                tr.appendChild(th);
+            });
+            
+            let homologar = document.createElement('th');
+            homologar.innerText = "HOMOLOGAR";
+            tr.appendChild(homologar);
+            tableFicha.appendChild(tr);
+
+            retorno.rows.forEach( e=> {
+                let tr = document.createElement('tr');
+                e.forEach( e => {
+                    let td = document.createElement('td');
+                    td.innerHTML = e;
+                    tr.appendChild(td);
+                });
+                
+                let homologar = document.createElement('td');
+                homologar.innerHTML = `
+                    <button onClick="homologar(${e[0]})">Homologar</button>
+                `;
+                tr.appendChild(homologar);
+
+                tableFicha.appendChild(tr);
+            });
+        }
+
+    }catch(e){
+        console.error(e);
+    }
+};
+
+    ajax.setRequestHeader('Content-Type','application/json');
+    ajax.send();
+</script>
+</html>

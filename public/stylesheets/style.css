@@ -4,9 +4,17 @@ body {
   text-align: center;
 }
 
-.app {
+form {
   text-align: left;
-  padding: 50px;
+  padding: 10px;
+}
+
+h2{
+  padding-top: 15px;
+}
+
+table{
+  padding-top: 50px;
 }
 
 a {
