@@ -193,5 +193,7 @@ from
 where 
   not exists (
     select 1 from ppl.filiado
-    where filiado.cod_ficha = ficha.codigo)
+    where filiado.cod_ficha = ficha.codigo
+      or filiado.cpf = ficha.cpf)
+order by data_registro desc
 ;
