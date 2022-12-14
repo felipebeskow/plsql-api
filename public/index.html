@@ -126,8 +126,6 @@
     ajax.onload = e => {
     try{
         let retorno = JSON.parse(ajax.responseText);    
-        
-        console.log(retorno.mensagem);
 
         if (retorno.error) {
             alert(retorno.mensagem);
