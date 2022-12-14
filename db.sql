@@ -197,5 +197,11 @@ where
       or filiado.cpf = ficha.cpf
       or filiado.nome = ficha.nome
   )
+  and not exists (
+    select 1 from ppl.filiado_hist
+    where filiado_hist.cod_ficha = ficha.codigo
+      or filiado_hist.cpf = ficha.cpf
+      or filiado_hist.nome = ficha.nome
+  )
 order by data_registro desc
 ;
