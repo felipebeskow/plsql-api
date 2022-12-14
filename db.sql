@@ -154,7 +154,7 @@ create or replace package body  ppl.pkg_ficha as
       from filiado
       where cod_ficha = p_codigo_ficha
     )loop
-      raise_application_error(-20002,'Ficha já homologada');
+      raise_application_error(-20002,'CPF já homologada');
     end loop;
     
     for filiado in (
@@ -163,13 +163,9 @@ create or replace package body  ppl.pkg_ficha as
       where cpf in (
         select cpf 
         from filiado
-        where codigo = p_codigo_ficha
-          and cpf in (
-            select cpf from filiado
-          )
-      )
+      ) and codigo = p_codigo_ficha
     )loop
-      raise_application_error(-20002,'Ficha já homologada');
+      raise_application_error(-20002,'CPF já homologada');
     end loop;
     
     for ficha in (

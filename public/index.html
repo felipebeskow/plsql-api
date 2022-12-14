@@ -8,8 +8,17 @@
     <link rel="stylesheet" href="./stylesheets/style.css">
 </head>
 <body>
-    <h1>Ficha</h1>
-    <form id="form-ficha">
+    
+    <h1>Terapia</h1>
+    <div class="app">
+        <button id="aba-ficha">Fichas</button>
+        <button id="aba-filiado">Filiados</button>
+        <button id="aba-contribuicao">Contribuição</button>
+    </div>
+
+
+    <h2>Ficha</h2>
+    <form id="form-ficha" class="app">
         <label for="nome">Nome: </label>
         <input id="nome" type="text" name="nome"><br>
         
@@ -30,30 +39,137 @@
         
         <button id="btn-ficha" type="submit" value="Enviar">Enviar</button>
     </form>
+
+    <table id="fichas"></table>
 </body>
+<script src="./cabecalho.js"></script>
 <script>
+    cabecalho();
+
+    function homologar(codigo){
+        console.log(codigo);
+        try{
+            let ajax = new XMLHttpRequest();
+
+            ajax.open('POST','/api/ficha/homologar');
+
+            ajax.onload = e => {
+                try{
+                    let retorno = JSON.parse(ajax.responseText);    
+                    
+                    alert(retorno.mensagem);
+
+                    if (retorno.error)
+                      console.error(retorno.error);
+                    else 
+                        window.location.reload();
+
+
+                }catch(e){
+                    console.error(e);
+                }
+            };
+            ajax.setRequestHeader('Content-Type','application/json');
+            ajax.send(JSON.stringify({
+                ficha: codigo
+            }));
+
+        }catch(e){
+            console.log(e);
+        }
+    }
+
     document.querySelector("#btn-ficha").addEventListener('click', e=>{
         e.preventDefault();
         let dados = {
-            nome:document.querySelector("#nome"),
-            cpf:document.querySelector("#cpf"),
-            telefone:document.querySelector("#telefone"),
-            email:document.querySelector("#email"),
-            cidade:document.querySelector("#cidade"),
-            uf:document.querySelector("#uf"),
+            nome:document.querySelector("#nome").value,
+            cpf:document.querySelector("#cpf").value,
+            telefone:document.querySelector("#telefone").value,
+            email:document.querySelector("#email").value,
+            cidade:document.querySelector("#cidade").value,
+            uf:document.querySelector("#uf").value.substring(0,2),
         };
         try{
             let ajax = new XMLHttpRequest();
 
             ajax.open('POST','/api/ficha');
 
-            ajax.onload = window.location.reload();
+            ajax.onload = e => {
+                try{
+                    let retorno = JSON.parse(ajax.responseText);    
+                    
+                    alert(retorno.mensagem);
 
-            ajax.send(dados);
+                    if (retorno.error)
+                      console.error(retorno.error);
+                    else 
+                        window.location.reload();
+
+
+                }catch(e){
+                    console.error(e);
+                }
+            };
+            ajax.setRequestHeader('Content-Type','application/json');
+            ajax.send(JSON.stringify(dados));
 
         }catch(e){
-            console.error(e);
+            console.log(e);
         }
     });
+
+    let tableFicha = document.querySelector('#fichas');
+    
+    let ajax = new XMLHttpRequest();
+    ajax.open('GET','/api/ficha');
+    
+    ajax.onload = e => {
+    try{
+        let retorno = JSON.parse(ajax.responseText);    
+        
+        console.log(retorno.mensagem);
+
+        if (retorno.error) {
+            alert(retorno.mensagem);
+            console.error(retorno.error);
+        } else {
+            
+            let tr = document.createElement('tr');
+            retorno.metaData.forEach( e => {
+                let th = document.createElement('th');
+                th.innerText = e.name;
+                tr.appendChild(th);
+            });
+            
+            let homologar = document.createElement('th');
+            homologar.innerText = "HOMOLOGAR";
+            tr.appendChild(homologar);
+            tableFicha.appendChild(tr);
+
+            retorno.rows.forEach( e=> {
+                let tr = document.createElement('tr');
+                e.forEach( e => {
+                    let td = document.createElement('td');
+                    td.innerHTML = e;
+                    tr.appendChild(td);
+                });
+                
+                let homologar = document.createElement('td');
+                homologar.innerHTML = `
+                    <button onClick="homologar(${e[0]})">Homologar</button>
+                `;
+                tr.appendChild(homologar);
+
+                tableFicha.appendChild(tr);
+            });
+        }
+
+    }catch(e){
+        console.error(e);
+    }
+};
+
+    ajax.setRequestHeader('Content-Type','application/json');
+    ajax.send();
 </script>
 </html>
