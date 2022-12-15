@@ -17,7 +17,7 @@
     </div>
 
 
-    <h2>Fiiliado</h2>
+    <h2>Filiado</h2>
     <form id="form" class="app">
         <label for="nome">Nome: </label>
         <input id="nome" type="text" name="nome"><br>
@@ -47,7 +47,7 @@
     cabecalho();
 
     function editar(codigo,nome,cpf,email,telefone,cidade,uf){
-        console.log(codigo,nome,cpf,email,telefone,cidade,uf);
+        window.document.filiado = codigo;
         
         document.querySelector("#nome").value = nome != 'null' ? nome : '';
         document.querySelector("#cpf").value = cpf != 'null' ? cpf : '';
@@ -58,7 +58,6 @@
     }
 
     function excluir(codigo){
-        console.log(codigo);
         try{
             let ajax = new XMLHttpRequest();
 
@@ -88,6 +87,11 @@
         }catch(e){
             console.log(e);
         }
+    }
+
+    function contribuicao(codigo){
+        window.document.filiado = codigo;
+        window.location.href = "./contribuicao.html";
     }
 
     document.querySelector("#btn-filiado").addEventListener('click', e=>{
@@ -166,8 +170,8 @@
                 });
                 
                 let acao = document.createElement('td');
-                window.document.filiado = e[0];
                 acao.innerHTML = `
+                    <button onClick="contribuicao(${e[0]})">Excluir</button>
                     <button onClick="editar(${e[0]},'${e[1]}','${e[2]}','${e[3]}','${e[4]}','${e[5]}','${e[6]}')">Editar</button>
                     <button onClick="excluir(${e[0]})">Excluir</button>
                 `;

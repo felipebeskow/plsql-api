@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>filiado de inscrição</title>
+    <link rel="stylesheet" href="./stylesheets/style.css">
+</head>
+<body>
+    
+    <h1>Terapia</h1>
+    <div class="app">
+        <button id="aba-ficha">Ficha</button>
+        <button id="aba-filiado">Filiados</button>
+        <button id="aba-contribuicao">Contribuição</button>
+    </div>
+
+
+    <h2>Contribuição</h2>
+    <form id="form" class="app">
+        <label for="nome">Nome: </label>
+        <input id="nome" type="text" name="nome"><br>
+        
+        <label for="cpf">CPF: </label>
+        <input id="cpf" type="text" name="cpf"><br>
+        
+        <label for="contribuicao">Contribuição: </label>
+        <input id="contribuicao" type="number" name="contribuicao" required="required"><br>
+        
+        <button id="btn-contribuicao" type="submit" value="Salvar">Salvar</button>
+    </form>
+
+    <table id="contribuicoes"></table>
+</body>
+<script src="./cabecalho.js"></script>
+<script>
+    cabecalho();
+
+    document.querySelector("#btn-contribuicao").addEventListener('click', e=>{
+        e.preventDefault();
+        console.log(window.document.contribuicao);
+        let dados = {
+            codigo:window.document.filiado,
+            uf:document.querySelector("#contribuicao").value,
+        };
+        try{
+            let ajax = new XMLHttpRequest();
+
+            ajax.open('POST','/api/contribuicao');
+
+            ajax.onload = e => {
+                try{
+                    let retorno = JSON.parse(ajax.responseText);    
+                    
+                    alert(retorno.mensagem);
+
+                    if (retorno.error)
+                      console.error(retorno.error);
+                    else 
+                        window.location.reload();
+
+
+                }catch(e){
+                    console.error(e);
+                }
+            };
+            ajax.setRequestHeader('Content-Type','application/json');
+            ajax.send(JSON.stringify(dados));
+
+        }catch(e){
+            console.log(e);
+        }
+    });
+
+    let tablecontribuicao = document.querySelector('#contribuicoes');
+    
+    let ajax = new XMLHttpRequest();
+    ajax.open('GET','/api/contribuicao');
+    
+    ajax.onload = e => {
+        try{
+            let retorno = JSON.parse(ajax.responseText);    
+
+            if (retorno.error) {
+                alert(retorno.mensagem);
+                console.error(retorno.error);
+            } else {
+                
+                let tr = document.createElement('tr');
+                retorno.metaData.forEach( e => {
+                    let th = document.createElement('th');
+                    th.innerText = e.name;
+                    tr.appendChild(th);
+                });
+                tablecontribuicao.appendChild(tr);
+
+                retorno.rows.forEach( e=> {
+                    let tr = document.createElement('tr');
+                    e.forEach( e => {
+                        let td = document.createElement('td');
+                        td.innerHTML = e;
+                        tr.appendChild(td);
+                    });
+                });
+            }
+
+        }catch(e){
+            console.error(e);
+        }
+    };
+
+    ajax.setRequestHeader('Content-Type','application/json');
+    ajax.send();
+</script>
+</html>

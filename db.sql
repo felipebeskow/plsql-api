@@ -51,11 +51,9 @@ create table ppl.contribuicao(
   cod_filiado number not null,
   valor number not null,
   periodo_referencial date not null,
-  cod_usuario number not null,
   data_registro date not null,
   constraint contribuicao_pk primary key (codigo),
-  constraint filiado_contribuicao_fk foreign key (cod_filiado) references ppl.filiado(codigo),
-  constraint usuario_contribuicao_fk foreign key (cod_usuario) references ppl.usuario(codigo)
+  constraint filiado_contribuicao_fk foreign key (cod_filiado) references ppl.filiado(codigo)
 );
 
 create sequence ppl.contribuicao_s1 start with 1000;
@@ -76,7 +74,7 @@ begin
   end if;
 exception
     when update_nao_permitido then
-      raise_application_error(-20001,'Não é permitido alterar a tabela');
+      raise_application_error(-20001,'Nï¿½o ï¿½ permitido alterar a tabela');
     when others then
       raise_application_error(sqlcode,sqlerrm);
 end;
@@ -111,7 +109,7 @@ begin
   end if;
 exception
     when update_nao_permitido then
-      raise_application_error(-20001,'Não é permitido alterar a tabela');
+      raise_application_error(-20001,'Nï¿½o ï¿½ permitido alterar a tabela');
     when others then
       raise_application_error(sqlcode,sqlerrm);
 end;
@@ -153,7 +151,7 @@ create or replace package body  ppl.pkg_ficha as
       from filiado
       where cod_ficha = p_codigo_ficha
     )loop
-      raise_application_error(-20002,'CPF já homologada');
+      raise_application_error(-20002,'CPF jï¿½ homologada');
     end loop;
     
     for filiado in (
@@ -164,7 +162,7 @@ create or replace package body  ppl.pkg_ficha as
         from filiado
       ) and codigo = p_codigo_ficha
     )loop
-      raise_application_error(-20002,'CPF já homologada');
+      raise_application_error(-20002,'CPF jï¿½ homologada');
     end loop;
     
     for ficha in (
@@ -274,7 +272,7 @@ create or replace package body ppl.pkg_filiado as
       from filiado
       where codigo = p_codigo;
     exception when no_data_found then
-      raise_application_error(-20003,'Codigo de filiado inválido');
+      raise_application_error(-20003,'Codigo de filiado invï¿½lido');
     end;
 
     delete filiado where codigo = p_codigo;
