@@ -40,5 +40,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/ficha', require('./routes/api/ficha'));
 app.use('/api/ficha/homologar', require('./routes/api/ficha/homologar'));
+app.use('/api/filiado', require('./routes/api/filiado'));
 
 module.exports = app;

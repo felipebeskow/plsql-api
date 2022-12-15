@@ -91,10 +91,9 @@ begin
     insert into ppl.filiado_hist(codigo,nome,cpf,email,telefone,cidade,uf,cod_ficha,data_registro,data_alteracao) 
     values (:old.codigo,:old.nome,:old.cpf,:old.email,:old.telefone,:old.cidade,:old.uf,:old.cod_ficha,:old.data_registro,:old.data_alteracao);
   end if;
-  :new.data_alteracao := sysdate;
-exception
-    when others then
-      raise_application_error(sqlcode,sqlerrm);
+  if not deleting then
+    :new.data_alteracao := sysdate;
+  end if;
 end;
 
 create or replace trigger ppl.contribuicao_t1 
@@ -205,3 +204,79 @@ where
   )
 order by data_registro desc
 ;
+
+create or replace package ppl.pkg_filiado as
+  procedure edita(
+    p_codigo filiado.codigo%type,
+    p_nome filiado.nome%type,
+    p_cpf filiado.cpf%type,
+    p_email filiado.email%type,
+    p_telefone filiado.telefone%type,
+    p_cidade filiado.cidade%type,
+    p_uf filiado.uf%type
+  );
+  
+  procedure excluir(
+    p_codigo filiado.codigo%type
+  );
+  
+end;
+
+create or replace package body ppl.pkg_filiado as
+  procedure edita(
+    p_codigo filiado.codigo%type,
+    p_nome filiado.nome%type,
+    p_cpf filiado.cpf%type,
+    p_email filiado.email%type,
+    p_telefone filiado.telefone%type,
+    p_cidade filiado.cidade%type,
+    p_uf filiado.uf%type
+  )as
+  begin
+    if p_codigo is null then
+        insert into filiado (
+          codigo,
+          nome,
+          cpf,
+          email,
+          telefone,
+          cidade,
+          uf
+        ) values (
+          filiado_s1.nextval,
+          p_nome,
+          p_cpf,
+          p_email,
+          p_telefone,
+          p_cidade,
+          p_uf
+        );
+    else
+        update filiado set
+          nome = p_nome,
+          cpf = p_cpf,
+          email = p_email,
+          telefone = p_telefone,
+          cidade = p_cidade,
+          uf = p_uf
+        where codigo = p_codigo;
+    end if;
+  end;
+
+  procedure excluir(
+    p_codigo filiado.codigo%type
+  ) as
+    w_codigo filiado.codigo%type;
+  begin
+    begin
+      select codigo
+      into w_codigo
+      from filiado
+      where codigo = p_codigo;
+    exception when no_data_found then
+      raise_application_error(-20003,'Codigo de filiado inválido');
+    end;
+
+    delete filiado where codigo = p_codigo;
+  end;  
+end;

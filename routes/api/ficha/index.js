@@ -56,7 +56,7 @@ router.get('/', async function(req, res, next) {
         telefone, 
         cidade, 
         uf, 
-        data_registro 
+        to_char(data_registro,'DD/MM/YYYY') DATA
       from ficha_v`,
       [],
       { autoCommit: true } 
