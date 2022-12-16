@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>filiado de inscrição</title>
+    <title>Cadastro de Filiados</title>
     <link rel="stylesheet" href="./stylesheets/style.css">
 </head>
 <body>
@@ -89,9 +89,8 @@
         }
     }
 
-    function contribuicao(codigo){
-        window.document.filiado = codigo;
-        window.location.href = "./contribuicao.html";
+    function contribuicao(codigo, nome, cpf){
+        window.location.href = `./contribuicao.html?codigo=${codigo}&nome=${nome}&cpf=${cpf}`;
     }
 
     document.querySelector("#btn-filiado").addEventListener('click', e=>{
@@ -171,7 +170,7 @@
                 
                 let acao = document.createElement('td');
                 acao.innerHTML = `
-                    <button onClick="contribuicao(${e[0]})">Excluir</button>
+                    <button onClick="contribuicao(${e[0]},'${e[1]}','${e[2]}')">Adicionar Contribuição</button>
                     <button onClick="editar(${e[0]},'${e[1]}','${e[2]}','${e[3]}','${e[4]}','${e[5]}','${e[6]}')">Editar</button>
                     <button onClick="excluir(${e[0]})">Excluir</button>
                 `;

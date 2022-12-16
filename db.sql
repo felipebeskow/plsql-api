@@ -278,3 +278,32 @@ create or replace package body ppl.pkg_filiado as
     delete filiado where codigo = p_codigo;
   end;  
 end;
+
+create or replace package ppl.pkg_contribuicao as
+  procedure insere(
+    p_filiado filiado.codigo%type,
+    p_referencia contribuicao.periodo_referencial%type,
+    p_valor contribuicao.valor%type
+  );
+end;
+
+create or replace package body ppl.pkg_contribuicao as
+  procedure insere(
+    p_filiado filiado.codigo%type,
+    p_referencia contribuicao.periodo_referencial%type,
+    p_valor contribuicao.valor%type
+  )as 
+  begin
+    insert into contribuicao (codigo, cod_filiado, valor, periodo_referencial)
+    values (contribuicao_s1.nextval, p_filiado, p_valor, p_referencia);
+  end;
+end;
+
+create or replace view ppl.contribuicao_v as
+select f.codigo, f.nome, f.cpf, to_char(periodo_referencial,'YYYY/MM') referencia, sum(valor) valor
+from 
+  filiado f, 
+  contribuicao c
+where
+  f.codigo = c.cod_filiado
+group by f.codigo, f.nome, f.cpf, to_char(periodo_referencial,'YYYY/MM');

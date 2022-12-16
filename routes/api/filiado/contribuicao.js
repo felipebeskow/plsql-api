@@ -10,8 +10,8 @@ router.post('/', async function(req, res, next) {
     try {
       connection = await oracledb.getConnection(dbConfig);
       await connection.execute(
-        `CALL PKG_CONTRIBUICAO.INSERE('${req.body.codigo}','${req.body.nome}','${req.body.cpf}','${req.body.email}','${req.body.telefone}','${req.body.cidade}','${req.body.uf}')`,
-        [],
+        `CALL PKG_CONTRIBUICAO.INSERE('${req.body.filiado}',:REFERENCIAL,'${req.body.contribuicao}')`,
+        [ new Date(req.body.referencia) ],
         { autoCommit: true } 
       );
       mensagem = {
@@ -52,11 +52,9 @@ router.get('/', async function(req, res, next) {
           codigo, 
           nome, 
           cpf, 
-          email, 
-          telefone, 
-          cidade, 
-          uf
-        from filiado`,
+          referencia, 
+          valor
+        from contribuicao_v`,
         [],
         { autoCommit: true } 
       );

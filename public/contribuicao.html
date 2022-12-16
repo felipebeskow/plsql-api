@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>filiado de inscrição</title>
+    <title>Cadastro de Filiados</title>
     <link rel="stylesheet" href="./stylesheets/style.css">
 </head>
 <body>
@@ -20,10 +20,13 @@
     <h2>Contribuição</h2>
     <form id="form" class="app">
         <label for="nome">Nome: </label>
-        <input id="nome" type="text" name="nome"><br>
+        <input id="nome" type="text" name="nome" disabled=""><br>
         
         <label for="cpf">CPF: </label>
-        <input id="cpf" type="text" name="cpf"><br>
+        <input id="cpf" type="text" name="cpf" disabled=""><br>
+        
+        <label for="referencia">Referência: </label>
+        <input id="referencia" type="date" name="referencia" required="required"><br>
         
         <label for="contribuicao">Contribuição: </label>
         <input id="contribuicao" type="number" name="contribuicao" required="required"><br>
@@ -36,18 +39,41 @@
 <script src="./cabecalho.js"></script>
 <script>
     cabecalho();
+    try{    
+        var query = location.search.slice(1);
+        var partes = query.split('&');
+        var data = {};
+        partes.forEach(function (parte) {
+            var chaveValor = parte.split('=');
+            var chave = chaveValor[0];
+            var valor = chaveValor[1];
+            data[chave] = valor;
+        });
+    } catch (e){
+        console.log(e);
+    }
+    console.log(data);
+    if (data.codigo) {
+        document.querySelector("#nome").value = data.nome.replace("%20"," ");
+        document.querySelector("#cpf").value = data.cpf;
+    } else {
+        document.querySelector('#referencia').disabled = true;
+        document.querySelector('#contribuicao').disabled = true;
+        document.querySelector('#btn-contribuicao').disabled = true;
+    }
 
     document.querySelector("#btn-contribuicao").addEventListener('click', e=>{
         e.preventDefault();
         console.log(window.document.contribuicao);
         let dados = {
-            codigo:window.document.filiado,
-            uf:document.querySelector("#contribuicao").value,
+            filiado:data.codigo,
+            referencia:document.querySelector("#referencia").value,
+            contribuicao:document.querySelector("#contribuicao").value,
         };
         try{
             let ajax = new XMLHttpRequest();
 
-            ajax.open('POST','/api/contribuicao');
+            ajax.open('POST','/api/filiado/contribuicao');
 
             ajax.onload = e => {
                 try{
@@ -76,11 +102,11 @@
     let tablecontribuicao = document.querySelector('#contribuicoes');
     
     let ajax = new XMLHttpRequest();
-    ajax.open('GET','/api/contribuicao');
+    ajax.open('GET','/api/filiado/contribuicao');
     
     ajax.onload = e => {
         try{
-            let retorno = JSON.parse(ajax.responseText);    
+            let retorno = JSON.parse(ajax.responseText); 
 
             if (retorno.error) {
                 alert(retorno.mensagem);
@@ -102,6 +128,7 @@
                         td.innerHTML = e;
                         tr.appendChild(td);
                     });
+                    tablecontribuicao.appendChild(tr);
                 });
             }
 
